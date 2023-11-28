@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package transactions_service;
+
+message SumAmountRequest {
+  string user_uuid = 1;
+  // Dates can be provided in convenient ISO format
+  string timestamp_start_utc = 2;
+  string timestamp_end_utc = 3;
+  string direction = 4;
+}
+
+message SumAmountResponse {
+  // protos do not support decimals without hacks, it's easier to convert a Python decimal to string
+  string sum_amount = 1;
+  double response_time_seconds = 2;
+}
+
+service Transactions {
+  rpc SumAmount (SumAmountRequest) returns (SumAmountResponse);
+}

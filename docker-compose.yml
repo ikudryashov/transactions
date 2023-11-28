@@ -1,0 +1,40 @@
+version: '3.8'
+services:
+  postgres:
+    container_name: transactions_postgres_db
+    build:
+      context: ./db
+      dockerfile: Dockerfile
+    environment:
+      TZ: 'UTC'
+      PGTZ: 'UTC'
+      POSTGRES_USER: transactions_db_user
+      POSTGRES_PASSWORD: transactions_db_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - transactions_app_network
+
+  grpc_service:
+    build: .
+    environment:
+      DB_URI: postgres:5432
+      DB_USER: transactions_db_user
+      DB_PASSWORD: transactions_db_password
+      DB_NAME: transactions_db
+      GRPC_HOST: "0.0.0.0"
+      GRPC_PORT: 50051
+    ports:
+      - "50051:50051"
+    depends_on:
+      - postgres
+    networks:
+      - transactions_app_network
+
+networks:
+  transactions_app_network:
+
+volumes:
+  postgres_data:
